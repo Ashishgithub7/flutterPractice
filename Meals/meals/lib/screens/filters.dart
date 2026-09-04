@@ -1,52 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class FiltersScreen extends StatefulWidget {
+import 'package:meals/Provider/filter_provider.dart';
+
+class FiltersScreen extends ConsumerWidget {
   const FiltersScreen({super.key});
-
+  
   @override
-  State<FiltersScreen> createState() {
-    return _FiltersScreenState();
-  }
-}
-
-bool glutenFree = false;
-bool lactoseFree = false;
-bool vegetarian = false;
-bool vegan = false;
-
-enum Filters{
-  glutenFree,
-  lactoseFree,
-  vegetarian,
-  vegan,
-}
-
-class _FiltersScreenState extends State<FiltersScreen> {
-  @override
-  Widget build(context) {
+  Widget build(context,WidgetRef ref) {
+    final activeFilters = ref.watch(filterProvider);
     return Scaffold(
       appBar: AppBar(
         title: Text("Your Filters",)
         ,),
-        body: PopScope(
-          canPop: false,
-          onPopInvokedWithResult: (didPop,result) {
-            if(didPop) return;
-            Navigator.of(context).pop({
-              Filters.glutenFree: glutenFree,
-              Filters.lactoseFree: lactoseFree,
-              Filters.vegetarian: vegetarian,
-              Filters.vegan: vegan,
-          });
-          },
-          child: Column(
+        body: Column(
             children: [
               SwitchListTile(
-                value: glutenFree, 
+                value: activeFilters[Filters.glutenFree]!, 
                 onChanged: (isChecked){
-                  setState((){
-                    glutenFree = isChecked;
-                  });
+                  ref.read(filterProvider.notifier).
+                  setFilter(Filters.glutenFree, isChecked);
                 },
                 title: Text("Gluten Free", style: Theme.of(context).textTheme.titleLarge!.copyWith(
                   color: Theme.of(context).colorScheme.onSurface
@@ -59,11 +32,10 @@ class _FiltersScreenState extends State<FiltersScreen> {
                 ),),
                 ),
                 SwitchListTile(
-                value: lactoseFree, 
+                value: activeFilters[Filters.lactoseFree]!, 
                 onChanged: (isChecked){
-                  setState((){
-                    lactoseFree = isChecked;
-                  });
+                  ref.read(filterProvider.notifier).
+                  setFilter(Filters.lactoseFree, isChecked);
                 },
                 title: Text("Lactose Free", style: Theme.of(context).textTheme.titleLarge!.copyWith(
                   color: Theme.of(context).colorScheme.onSurface
@@ -76,11 +48,10 @@ class _FiltersScreenState extends State<FiltersScreen> {
                 ),),
                 ),
                 SwitchListTile(
-                value: vegetarian, 
+                value: activeFilters[Filters.vegetarian]!, 
                 onChanged: (isChecked){
-                  setState((){
-                    vegetarian = isChecked;
-                  });
+                  ref.read(filterProvider.notifier).
+                  setFilter(Filters.vegetarian, isChecked);
                 },
                 title: Text("Vegetarian", style: Theme.of(context).textTheme.titleLarge!.copyWith(
                   color: Theme.of(context).colorScheme.onSurface
@@ -93,11 +64,10 @@ class _FiltersScreenState extends State<FiltersScreen> {
                 ),),
                 ),
                 SwitchListTile(
-                value: vegan, 
+                value: activeFilters[Filters.vegan]!, 
                 onChanged: (isChecked){
-                  setState((){
-                    vegan = isChecked;
-                  });
+                  ref.read(filterProvider.notifier).
+                  setFilter(Filters.vegan, isChecked);
                 },
                 title: Text("Vegan", style: Theme.of(context).textTheme.titleLarge!.copyWith(
                   color: Theme.of(context).colorScheme.onSurface
@@ -111,7 +81,6 @@ class _FiltersScreenState extends State<FiltersScreen> {
                 ),
             ],
           ),
-        ),
         );
   }
 }
