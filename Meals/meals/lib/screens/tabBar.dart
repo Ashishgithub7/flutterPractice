@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:meals/Provider/favorite_meals_provider.dart';
+
 import 'package:meals/data/dummy_categories_data.dart';
-import 'package:meals/main.dart';
-import 'package:meals/model/meal.dart';
 import 'package:meals/screens/categories.dart';
 import 'package:meals/screens/filters.dart';
 import 'package:meals/screens/meals.dart';
@@ -14,41 +15,19 @@ const kInitialFilters = {
   Filters.vegan : false
 };
 
-class TabBarScreen extends StatefulWidget {
+class TabBarScreen extends ConsumerStatefulWidget {
   const TabBarScreen({super.key});
 
   @override
-  State<TabBarScreen> createState() {
+  ConsumerState<TabBarScreen> createState() {
     return _TabBarScreenState();
   }
 }
 
-class _TabBarScreenState extends State<TabBarScreen> {
+class _TabBarScreenState extends ConsumerState<TabBarScreen> {
   int _selectedTabIndex = 0;
 
   var _selectedFilters = kInitialFilters;
-
-  final List<Meal> favoriteMeals = [];
-  void favoriteAddRemoveMessage(String message) {
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text(message)));
-  }
-
-  void _onToggleFavorite(Meal meal) {
-    bool isExisting = favoriteMeals.contains(meal);
-    if (isExisting) {
-      setState(() {
-        favoriteMeals.remove(meal);
-      });
-      favoriteAddRemoveMessage("${meal.title} removed from favorites");
-    } else {
-      setState(() {
-        favoriteMeals.add(meal);
-      });
-      favoriteAddRemoveMessage("${meal.title} added to favorites");
-    }
-  }
 
   void _onTabSelection(int index) {
     setState(() {
@@ -91,14 +70,13 @@ class _TabBarScreenState extends State<TabBarScreen> {
     }).toList();
 
     Widget _selectedScreen = CategoriesScreen(
-      onToggleFavorite: _onToggleFavorite,
       availableMeals : _availableMeals
     );
     String selectedTitle = "Categories";
     if (_selectedTabIndex == 1) {
+      final favoriteMeals = ref.watch(favoriteMealsProvider); 
       _selectedScreen = MealsScreen(
         meals: favoriteMeals,
-        onToggleFavorite: _onToggleFavorite,
       );
       selectedTitle = "Your Favorites";
     }
