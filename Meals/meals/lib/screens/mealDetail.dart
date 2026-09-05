@@ -21,14 +21,31 @@ class MealDetailScreen extends ConsumerWidget {
                   .read(favoriteMealsProvider.notifier)
                   .toggleMealFavorite(meal);
               ScaffoldMessenger.of(context).clearSnackBars();
-              ScaffoldMessenger.of(context,)
-              .showSnackBar(
-                SnackBar(content: Text(wasAdded ? "${meal.title} added to favorites" : "${meal.title} removed from favorites")));
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(
+                    wasAdded
+                        ? "${meal.title} added to favorites"
+                        : "${meal.title} removed from favorites",
+                  ),
+                ),
+              );
             },
-            icon: Icon(isFavorite ? Icons.star : Icons.star_border),
-          ),
-        ],
-      ),
+            icon: AnimatedSwitcher(
+              duration: const Duration(milliseconds: 300),
+              child: Icon(
+                isFavorite ? Icons.star : Icons.star_border,
+                key: ValueKey(isFavorite),
+              ),
+              transitionBuilder: (child,animation){
+                return RotationTransition(
+                  turns: Tween(begin: 0.9,end:1.0).animate(animation),
+                  child:child,
+                );
+              })
+            ),
+          ],
+        ),
       body: Center(
         child: SingleChildScrollView(
           child: Padding(
@@ -40,11 +57,14 @@ class MealDetailScreen extends ConsumerWidget {
                     borderRadius: BorderRadius.circular(16),
                   ),
                   clipBehavior: Clip.hardEdge,
-                  child: Image.network(
-                    meal.imageUrl,
-                    height: 300,
-                    width: double.infinity * 0.8,
-                    fit: BoxFit.cover,
+                  child: Hero(
+                    tag:meal.id,
+                    child: Image.network(
+                      meal.imageUrl,
+                      height: 300,
+                      width: double.infinity * 0.8,
+                      fit: BoxFit.cover,
+                    ),
                   ),
                 ),
                 SizedBox(height: 16),
