@@ -6,8 +6,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
 
 class FavoritePlaceListScreen extends ConsumerStatefulWidget {
-  FavoritePlaceListScreen({super.key});
+  const FavoritePlaceListScreen({super.key});
 
+  @override
   ConsumerState<FavoritePlaceListScreen> createState() =>
       _FavoritePlaceListScreenState();
 }
@@ -15,10 +16,13 @@ class FavoritePlaceListScreen extends ConsumerStatefulWidget {
 class _FavoritePlaceListScreenState
     extends ConsumerState<FavoritePlaceListScreen> {
   void openDetails(FavoritePlace place) {
-    Navigator.of(
-      context,
-    ).push(MaterialPageRoute(builder: (ctx) => FavoritePlaceDetailScreen(place: place,)));
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (ctx) => FavoritePlaceDetailScreen(place: place),
+      ),
+    );
   }
+
   void _addPlaces() {
     Navigator.of(
       context,
@@ -38,14 +42,29 @@ class _FavoritePlaceListScreenState
         child: ListView(
           children: [
             for (final place in favoritePlaces)
-              ListTile(
-                title: Text(place.title),
-                onTap: () {
-                  openDetails(place);
-                },
-                // style: ListTileStyle.list,
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: ListTile(
+                  leading: CircleAvatar(
+                    radius: 26,
+                    backgroundImage: FileImage(place.image),
+                  ),
+                  onTap: () {
+                    openDetails(place);
+                  },
+                  title: Text(place.title, style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                    color: Colors.white,
+                    ),
+                    ),
+                  subtitle: Text(place.location.address, style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                    color: Theme.of(context).colorScheme.onSurface,
+                  ),
+                  
+                  // style: ListTileStyle.list,
+                ),
               ),
-          ],
+        ),
+        ],
         ),
       ),
     );
