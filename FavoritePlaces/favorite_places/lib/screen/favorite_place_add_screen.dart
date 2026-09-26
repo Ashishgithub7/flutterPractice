@@ -1,10 +1,13 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'dart:io';
+import 'package:path_provider/path_provider.dart' as syspaths;
+import 'package:path/path.dart' as path;
+
 import 'package:favorite_places/model/favorite_place.dart';
 import 'package:favorite_places/providers/favorite_places_provider.dart';
 import 'package:favorite_places/widgets/image_input.dart';
 import 'package:favorite_places/widgets/location_input.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'dart:io';
 
 class FavoritePlaceAddScreen extends ConsumerStatefulWidget {
   const FavoritePlaceAddScreen({super.key});
@@ -21,15 +24,18 @@ class _FavoritePlacesAddScreenState extends ConsumerState<FavoritePlaceAddScreen
 
   File ?_selectedImage;
   final titleController = TextEditingController();
-  void _addPlace() {
+  void _addPlace() async{
     final placeTitle = titleController.text;
 
     if(placeTitle.isEmpty || _selectedImage==null || selectedLocation == null) return;
-    
+    final appDirectory = await syspaths.getApplicationDocumentsDirectory();
+    final filename = path.basename(_selectedImage!.path);
+    final copiedImage = await _selectedImage!.copy("${appDirectory.path}/$filename");
+
     final newPlace = FavoritePlace(
       id: DateTime.now().microsecondsSinceEpoch.toString(),
       title: placeTitle,
-      image: _selectedImage!,
+      image: copiedImage,
       location: selectedLocation! ,
     );
 
@@ -39,7 +45,7 @@ class _FavoritePlacesAddScreenState extends ConsumerState<FavoritePlaceAddScreen
 
     Navigator.of(context).pop();
   }
-
+ 
   @override
   Widget build(BuildContext context) {
     return Scaffold(

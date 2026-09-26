@@ -1,5 +1,7 @@
 import "dart:io";
+import 'package:uuid/uuid.dart';
 
+final uuid = Uuid();
 class PlaceLocation{
   PlaceLocation({
     required this.longitude, 
@@ -15,11 +17,11 @@ class PlaceLocation{
 
 class FavoritePlace {
   FavoritePlace({
-    required this.id,
+    String? id,
     required this.title,
     required this.image,
     required this.location
-  });
+  }): id = id ?? uuid.v4();
   
   final String id;
   final String title;
