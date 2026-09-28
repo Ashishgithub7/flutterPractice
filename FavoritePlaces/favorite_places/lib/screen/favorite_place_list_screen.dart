@@ -14,13 +14,15 @@ class FavoritePlaceListScreen extends ConsumerStatefulWidget {
       _FavoritePlaceListScreenState();
 }
 
-class _FavoritePlaceListScreenState extends ConsumerState<FavoritePlaceListScreen> {
+class _FavoritePlaceListScreenState
+    extends ConsumerState<FavoritePlaceListScreen> {
   late Future<void> _placesFuture;
   @override
   void initState() {
     super.initState();
-    _placesFuture = ref.read(favoritePlacesProvider.notifier).loadPlaces();    
+    _placesFuture = ref.read(favoritePlacesProvider.notifier).loadPlaces();
   }
+
   void openDetails(FavoritePlace place) {
     Navigator.of(context).push(
       MaterialPageRoute(
@@ -45,40 +47,47 @@ class _FavoritePlaceListScreenState extends ConsumerState<FavoritePlaceListScree
       ),
       body: FutureBuilder(
         future: _placesFuture,
-        builder:(context,snapshot) => 
-        snapshot.connectionState == ConnectionState.waiting 
-        ? Center(child : CircularProgressIndicator())
-        : Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: ListView(
-            children: [
-              for (final place in favoritePlaces)
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: ListTile(
-                    leading: CircleAvatar(
-                      radius: 26,
-                      backgroundImage: FileImage(place.image),
-                    ),
-                    onTap: () {
-                      openDetails(place);
-                    },
-                    title: Text(place.title, style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                      color: Colors.white,
+        builder: (context, snapshot) =>
+            snapshot.connectionState == ConnectionState.waiting
+            ? Center(child: CircularProgressIndicator())
+            : Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: favoritePlaces.isEmpty
+                    ? Center(child: Text("No places added to show yet"))
+                    : ListView(
+                        children: [
+                          for (final place in favoritePlaces)
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: ListTile(
+                                leading: CircleAvatar(
+                                  radius: 26,
+                                  backgroundImage: FileImage(place.image),
+                                ),
+                                onTap: () {
+                                  openDetails(place);
+                                },
+                                title: Text(
+                                  place.title,
+                                  style: Theme.of(context).textTheme.bodyLarge!
+                                      .copyWith(color: Colors.white),
+                                ),
+                                subtitle: Text(
+                                  place.location.address,
+                                  style: Theme.of(context).textTheme.bodySmall!
+                                      .copyWith(
+                                        color: Theme.of(
+                                          context,
+                                        ).colorScheme.onSurface,
+                                      ),
+
+                                  // style: ListTileStyle.list,
+                                ),
+                              ),
+                            ),
+                        ],
                       ),
-                      ),
-                    subtitle: Text(place.location.address, style: Theme.of(context).textTheme.bodySmall!.copyWith(
-                      color: Theme.of(context).colorScheme.onSurface,
-                    ),
-                    
-                    // style: ListTileStyle.list,
-                  ),
-                ),
-          ),
-          ],
-          ),
-        ),
-        
+              ),
       ),
     );
   }
